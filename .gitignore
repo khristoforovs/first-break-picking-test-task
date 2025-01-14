@@ -1,0 +1,16 @@
+examples/data
+
+*.pyc
+*.pyo
+__pycache__/
+develop-eggs/
+dist/
+MANIFEST
+
+*.log
+
+.idea/*
+
+.env
+venv/
+env/
