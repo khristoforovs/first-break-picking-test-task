@@ -12,31 +12,47 @@ path_to_file = r"D:\Storage\datasets\first-break-recognition-dataset\data\Halfmi
 f = dict(h5py.File(path_to_file)["TRACE_DATA/DEFAULT"])
 
 
-def get_rec_ids() -> tuple[npt.NDArray[np.int_], int]:
+def get_rec_ids() -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_], int]:
     rec = np.c_[f["REC_X"][:], f["REC_Y"][:]]
     unique_recs = np.unique(rec, axis=0)
     match_x = np.abs(rec[:, 0][:, None] - unique_recs[:, 0][None, :]) == 0
     match_y = np.abs(rec[:, 1][:, None] - unique_recs[:, 1][None, :]) == 0
-    return np.nonzero(np.logical_and(match_x, match_y))[1], len(unique_recs)
+    return rec, np.nonzero(np.logical_and(match_x, match_y))[1], len(unique_recs)
 
 
-rec_ids, n_unique_recs = get_rec_ids()
+rec, rec_ids, n_unique_recs = get_rec_ids()
 
 
 def split_data_array(receiver_ids: npt.NDArray[np.int_], n_unique_receivers: int) -> list[npt.NDArray[np.float_]]:
-    data_array = f["data_array"]
+    data_array = f["data_array"][:]
     result = []
     for i in tqdm(range(n_unique_receivers)):
         result.append(data_array[receiver_ids == i, :])
     return result
 
 
-data_array_split = split_data_array(rec_ids, n_unique_recs)
+def prepare_shot_id(receiver_ids: npt.NDArray[np.int_], n_unique_receivers: int):
+    result = []
+    for i in tqdm(range(n_unique_receivers)):
+        result.append(f["SHOTID"][:][receiver_ids == i, :])
+    return result
 
 
-keys = ["REC_X", "REC_Y", "SAMP_RATE", "SHOTID", "SPARE1"]
+def prepare_spare1(receiver_ids: npt.NDArray[np.int_], n_unique_receivers: int):
+    result = []
+    for i in tqdm(range(n_unique_receivers)):
+        result.append(f["SPARE1"][:][receiver_ids == i, :])
+    return result
 
-# df = pd.DataFrame({key: f[key][:] for key in keys})
+
+df = pd.DataFrame(
+    {
+        "data_array": split_data_array(rec_ids, n_unique_recs),
+        "rec_coord": [rec[np.where(rec_ids==i)[0][0], :] for i in range(n_unique_recs)],
+        "shot_id": prepare_shot_id(rec_ids, n_unique_recs),
+        "spare1": prepare_spare1(rec_ids, n_unique_recs),
+    }
+)
 
 
 pass
