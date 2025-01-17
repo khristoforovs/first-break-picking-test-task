@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "first-break-picking-test-task"
+version = "0.1.0"
+description = "Seismic data anaysis using various methods"
+readme = "README.md"
+authors = [
+  { name = "Stanislav Khristoforov", email = "khristoforov.stanislav@yandex.ru" },
+]
+requires-python = ">=3.11"
+classifiers = [
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Topic :: Scientific/Engineering",
+]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
+
+[project.urls]
+homepage = "https://github.com/khristoforovs/first-break-picking-test-task.git"
+
+[tool.black]
+line_length = 120
+
+[tool.ruff]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length  = 120
+src_paths = ["src", "tests", "scripts"]
+multi_line_output = 3
+include_trailing_comma = true
+lines_between_sections = 0
+lines_after_imports = 2
+combine_as_imports = true
