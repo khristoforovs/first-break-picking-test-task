@@ -23,7 +23,7 @@ def get_rec_ids() -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_], int]:
 rec, rec_ids, n_unique_recs = get_rec_ids()
 
 
-def split_data_array(receiver_ids: npt.NDArray[np.int_], n_unique_receivers: int) -> list[npt.NDArray[np.float_]]:
+def prepare_data_array(receiver_ids: npt.NDArray[np.int_], n_unique_receivers: int) -> list[npt.NDArray[np.float_]]:
     data_array = f["data_array"][:]
     result = []
     for i in tqdm(range(n_unique_receivers)):
@@ -47,7 +47,7 @@ def prepare_spare1(receiver_ids: npt.NDArray[np.int_], n_unique_receivers: int):
 
 df = pd.DataFrame(
     {
-        "data_array": split_data_array(rec_ids, n_unique_recs),
+        "data_array": prepare_data_array(rec_ids, n_unique_recs),
         "rec_coord": [rec[np.where(rec_ids==i)[0][0], :] for i in range(n_unique_recs)],
         "shot_id": prepare_shot_id(rec_ids, n_unique_recs),
         "spare1": prepare_spare1(rec_ids, n_unique_recs),
